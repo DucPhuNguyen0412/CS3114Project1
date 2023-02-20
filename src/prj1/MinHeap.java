@@ -38,12 +38,12 @@ public class MinHeap {
         int index = nodes.length; //getting the # of values in the list
         int position = index-1;
         nodes[position] = new HeapNode(id, value); // inserting the node as the last node;
-        int x = Math.abs(((position+d-2)/d) - 1);
-        while (value < nodes[(position+d-2)/d].getValue()) { // if node is less than parent node
-            HeapNode temp = nodes[(position+d-2)/d];     // placeholder for the parent
-            nodes[(position+d-2)/d] = nodes[position];     // swap position
+        int x = (position-1)/d;
+        while (value < nodes[x].getValue()) { // if node is less than parent node
+            HeapNode temp = nodes[x];     // placeholder for the parent
+            nodes[x] = nodes[position];     // swap position
             nodes[position] = temp;
-            position = (position+d-2)/d;
+            position = x;
         } 
         // If node is less than parent node, we swap it (in the array)
         // Keep doing so until heap order is preserved 
@@ -78,6 +78,11 @@ public class MinHeap {
      * @param newValue
      */
     public void decreaseKey(int id, int newValue) {
+        for (int i = 0; i < nodes.length-1; i++) {
+            if (nodes[i].getId() == id) {
+                nodes[i].setValue(newValue);
+            }
+        }
         //find ID of the node and find pos based on that ID
         //decrase key
     }
