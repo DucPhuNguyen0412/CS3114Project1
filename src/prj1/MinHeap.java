@@ -1,9 +1,10 @@
 package prj1;
-jj
+
 /**
  * In this class, we implement the d-ary min-heap data structure
  * 
  * @author Skylar Mayfield
+ * @author 
  *
  */
 public class MinHeap {
@@ -37,11 +38,12 @@ public class MinHeap {
         int index = nodes.length; //getting the # of values in the list
         int position = index-1;
         nodes[position] = new HeapNode(id, value); // inserting the node as the last node;
-        while (value < nodes[position/2].getValue()) { // if node is less than parent node
-            HeapNode temp = nodes[position/2];     // placeholder for the parent
-            nodes[position/2] = nodes[position];     // swap position
+        int x = Math.abs(((position+d-2)/d) - 1);
+        while (value < nodes[(position+d-2)/d].getValue()) { // if node is less than parent node
+            HeapNode temp = nodes[(position+d-2)/d];     // placeholder for the parent
+            nodes[(position+d-2)/d] = nodes[position];     // swap position
             nodes[position] = temp;
-            position = position/2;
+            position = (position+d-2)/d;
         } 
         // If node is less than parent node, we swap it (in the array)
         // Keep doing so until heap order is preserved 
@@ -58,7 +60,12 @@ public class MinHeap {
      *         you should return the array [5, 1]
      */
     public int[] extractMin() {
-        // TODO complete
+        if (nodes[0] != null) {
+            int[] min = new int[2];
+            min[0] = nodes[0].getId();
+            min[1] = nodes[0].getValue();
+            return min;
+        }
         return null;
     }
 
@@ -71,7 +78,8 @@ public class MinHeap {
      * @param newValue
      */
     public void decreaseKey(int id, int newValue) {
-        // TODO complete
+        //find ID of the node and find pos based on that ID
+        //decrase key
     }
 
 
