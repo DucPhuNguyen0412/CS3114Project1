@@ -4,7 +4,6 @@ package prj1;
  * In this class, we implement the d-ary min-heap data structure
  * 
  * @author Skylar Mayfield
- * @author 
  *
  */
 public class MinHeap {
@@ -14,9 +13,10 @@ public class MinHeap {
     // The array representation of your min-heap (It is not required to use this)
     private HeapNode[] nodes;
 
+
     // The length of the array reprsentation of nodes.
     private int size;
-
+    
     /**
      * Constructor
      * 
@@ -40,7 +40,6 @@ public class MinHeap {
      */
     public void insert(int id, int value) {
         int position = size;
-        System.out.println(size);
         nodes[position] = new HeapNode(id, value); // inserting the node as the last node;
         while (value < nodes[position/d].getValue()) { // if node is less than parent node
             HeapNode temp = nodes[position/d];     // placeholder for the parent
@@ -68,6 +67,14 @@ public class MinHeap {
             int[] min = new int[2];
             min[0] = nodes[0].getId();
             min[1] = nodes[0].getValue();
+            for (int i = 0; i < size-1; i++) {
+                nodes[i] = nodes[i+1];
+            }
+            nodes[size-1] = null;
+            size--;
+            for (int j = 0; j < size-1; j++) {
+                System.out.println(nodes[j].getValue());
+            }
             return min;
         }
         return null;
@@ -85,8 +92,16 @@ public class MinHeap {
         for (int i = 0; i < nodes.length-1; i++) {
             if (nodes[i].getId() == id) {
                 nodes[i].setValue(newValue);
+                while (newValue < nodes[i/d].getValue()) { // if node is less than parent node
+                    HeapNode temp = nodes[i/d];     // placeholder for the parent
+                    nodes[i/d] = nodes[i];     // swap position
+                    nodes[i] = temp;
+                } 
             }
         }
+
+        // need to preserve the order
+
         //find ID of the node and find pos based on that ID
         //decrase key
     }
@@ -98,8 +113,11 @@ public class MinHeap {
      * @return the array representation of heap
      */
     public int[] getHeap() {
-        // TODO complete
-        return null;
+        int[] representation = new int[size];
+        for (int i = 0; i < size; i++) {
+            representation[i] = nodes[i].getValue();
+        }
+        return representation;
     }
 
 
