@@ -14,6 +14,9 @@ public class MinHeap {
     // The array representation of your min-heap (It is not required to use this)
     private HeapNode[] nodes;
 
+    // The length of the array reprsentation of nodes.
+    private int size;
+
     /**
      * Constructor
      * 
@@ -23,8 +26,9 @@ public class MinHeap {
      *            parameter d in the d-ary min-heap
      */
     public MinHeap(int n, int d) {
-        d = this.d;
+        this.d = d;
         nodes = new HeapNode[n];
+        size = 0;
     }
 
 
@@ -35,16 +39,16 @@ public class MinHeap {
      * @param value
      */
     public void insert(int id, int value) {
-        int index = nodes.length; //getting the # of values in the list
-        int position = index-1;
+        int position = size;
+        System.out.println(size);
         nodes[position] = new HeapNode(id, value); // inserting the node as the last node;
-        int x = (position-1)/d;
-        while (value < nodes[x].getValue()) { // if node is less than parent node
-            HeapNode temp = nodes[x];     // placeholder for the parent
-            nodes[x] = nodes[position];     // swap position
+        while (value < nodes[position/d].getValue()) { // if node is less than parent node
+            HeapNode temp = nodes[position/d];     // placeholder for the parent
+            nodes[position/d] = nodes[position];     // swap position
             nodes[position] = temp;
-            position = x;
+            position = position/d;
         } 
+        size++;
         // If node is less than parent node, we swap it (in the array)
         // Keep doing so until heap order is preserved 
     }
