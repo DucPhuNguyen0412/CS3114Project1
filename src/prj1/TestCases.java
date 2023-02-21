@@ -14,7 +14,7 @@ import org.junit.Test;
  * @author Pouyan
  *
  */
-public class TestCases {
+ public class TestCases {
 
     @Test
     public void testMinHeapInsert() {
