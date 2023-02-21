@@ -67,14 +67,14 @@ public class MinHeap {
             int[] min = new int[2];
             min[0] = nodes[0].getId();
             min[1] = nodes[0].getValue();
-            for (int i = 0; i < size-1; i++) {
-                nodes[i] = nodes[i+1];
-            }
+            nodes[0] = nodes[size-1];
+
             nodes[size-1] = null;
             size--;
-            for (int j = 0; j < size-1; j++) {
-                System.out.println(nodes[j].getValue());
-            }
+            
+            //heapify-down();
+            heaping_down(nodes, size);
+                   
             return min;
         }
         return null;
@@ -138,6 +138,31 @@ public class MinHeap {
             }
         }
         return sb.toString();
+    }
+
+    public static void heaping_down(HeapNode[] H, int i) {
+        int n = H.length;
+        while (true) {
+            // Find the index of the smallest child
+            int smallest_child = i;
+            if (2*i+1 < n && H[2*i+1].getValue() < H[smallest_child].getValue()) {
+                smallest_child = 2*i+1;
+            }
+            if (2*i+2 < n && H[2*i+2].getValue() < H[smallest_child].getValue()) {
+                smallest_child = 2*i+2;
+            }
+            // If the smallest child is smaller than the current node, swap them
+            if (smallest_child != i) {
+                int temp = H[i].getValue();
+                H[i] = H[smallest_child];
+                H[smallest_child].setValue(temp);
+                // Update the current index to the index of the smallest child
+                i = smallest_child;
+            } else {
+                // Otherwise, the heap property is satisfied, so break the loop
+                break;
+            }
+        }
     }
 
 }
