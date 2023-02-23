@@ -4,6 +4,7 @@ package prj1;
  * In this class, we implement the d-ary min-heap data structure
  * 
  * @author Skylar Mayfield
+ *         Phu Nguyen
  *
  */
 public class MinHeap {
@@ -63,23 +64,21 @@ public class MinHeap {
      *         you should return the array [5, 1]
      */
     public int[] extractMin() {
-        if (nodes[0] != null) {
+        if (size == 0) {
+            // If the heap is empty, return null
+            return null;
+        } else {
+            // Otherwise, extract the minimum element and update the heap
             int[] min = new int[2];
             min[0] = nodes[0].getId();
             min[1] = nodes[0].getValue();
             nodes[0] = nodes[size-1];
-
-            nodes[size-1] = null;
+            nodes[size - 1] = null;
             size--;
-            
-            //heapify-down();
-            heaping_down(nodes, size);
-                   
+            heapifyDown(0);
             return min;
         }
-        return null;
     }
-
 
     /**
      * This method takes an id and a new value newValue for the corresponding
@@ -140,29 +139,43 @@ public class MinHeap {
         return sb.toString();
     }
 
-    public static void heaping_down(HeapNode[] H, int i) {
-        int n = H.length;
-        while (true) {
-            // Find the index of the smallest child
-            int smallest_child = i;
-            if (2*i+1 < n && H[2*i+1].getValue() < H[smallest_child].getValue()) {
-                smallest_child = 2*i+1;
-            }
-            if (2*i+2 < n && H[2*i+2].getValue() < H[smallest_child].getValue()) {
-                smallest_child = 2*i+2;
-            }
-            // If the smallest child is smaller than the current node, swap them
-            if (smallest_child != i) {
-                int temp = H[i].getValue();
-                H[i] = H[smallest_child];
-                H[smallest_child].setValue(temp);
-                // Update the current index to the index of the smallest child
-                i = smallest_child;
-            } else {
-                // Otherwise, the heap property is satisfied, so break the loop
-                break;
-            }
+    /**
+     * Ensuring that the heap peoperty is satisfied at the given index and all indices below it,
+     * if not, "bubbles up" the indices that have smaller values.
+     * 
+     * @param i The index to heapify downwards from
+     */
+    private void heapifyDown(int i) {
+        int minVal = i;
+
+        // Check the values of the left and right children, if they exist
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        if (left < size && nodes[left].getValue() < nodes[minVal].getValue()) {
+            minVal = left;
         }
+        if (right < size && nodes[right].getValue() < nodes[minVal].getValue()) {
+            minVal = right;
+        }
+
+        // If the minimum value is not at the current index, swap the nodes
+        if (minVal != i) {
+            swapNodes(i, minVal);
+            // Recursively heapify downwards from the minimum value index
+            heapifyDown(minVal);
+        }
+    }
+
+    /**
+     * Swaps the nodes at the given indices.
+     * 
+     * @param i The index of the first node to swap
+     * @param j The index of the second node to swap
+     */
+    private void swapNodes(int i, int j) {
+        HeapNode temp = nodes[i];
+        nodes[i] = nodes[j];
+        nodes[j] = temp;
     }
 
 }
