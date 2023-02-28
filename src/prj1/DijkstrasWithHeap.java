@@ -10,7 +10,9 @@ import java.util.ArrayList;
  * The implementation of Dijkstras shortest path algorithm by using
  * min-heaps
  * 
+ * @author Skylar Mayfield
  * @author Phu Nguyen
+ * 
  */
 public class DijkstrasWithHeap {
     private int n;

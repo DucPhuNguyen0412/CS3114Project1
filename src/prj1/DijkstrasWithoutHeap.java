@@ -27,12 +27,12 @@ public class DijkstrasWithoutHeap {
      *            end-points of the i-th edge and edges[i][2] is its weight
      */
     public DijkstrasWithoutHeap(int n, int[][] edges) {
-        int[][] graph = new int[3][n];
-           for (int i = 0; i < n; i++) {
-                for (int j = 0; j < 3; i++) {
-                    graph[i][j] = edges[i][j];
-                }
-           }
+        int[][] graph = new int[n][3];
+        for (int i = 0; i < n; i++) {
+             for (int j = 0; j < 3; j++) {
+                 graph[i][j] = edges[i][j];
+             }
+        }
         this.n = n;
         this.graph = graph;
     }
@@ -50,17 +50,39 @@ public class DijkstrasWithoutHeap {
      */
     public int[] run(int source) {
         int[] distance = new int[n];
-        //Boolean[] visited = new Boolean[n];
-        //ArrayList<Integer> visited = new ArrayList<>();
-        //ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        Boolean[] visited = new Boolean[n];
+        
 
         for (int i = 0; i < n; i++) {
             distance[i] = Integer.MAX_VALUE;
+            visited[i] = false;
         }
         distance[source-1] = 0;
-        int min = graph[0][source];
-        distance[min] = 1;
-        return null;
+        //visited[source-1] = true;
+
+        for (int i = 0; i < n; i++) {
+            int min = findMin(distance, visited);
+            visited[min-1] = true; // setting true once we process it
+            if (!visited[min] && graph[i][min] != -1 && distance[i] != Integer.MAX_VALUE && distance[min] < distance[i]) {
+                distance[min] = distance[i] + graph[i][min];
+
+            }
+        }
+        return distance;
+    }
+
+    private int findMin(int[] distance, Boolean[] visited) {
+        int min = Integer.MAX_VALUE;
+        int x = -1;
+
+        for (int i = 0; i < n; i++) {
+            // checking to see if unexplored, finding min value
+            if (visited[i] == false && distance[i] <= min) {
+                min = distance[i];
+                x = i;
+            }
+        }
+        return x;
     }
         
 }
