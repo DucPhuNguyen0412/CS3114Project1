@@ -140,6 +140,18 @@ public class MinHeap {
     }
 
     /**
+     * 
+     * @return
+     */
+    public Boolean isEmpty() {
+        Boolean empty = false;
+        if (size == 0) {
+            empty = true;
+        }
+        return empty;
+    }
+
+    /**
      * Ensuring that the heap peoperty is satisfied at the given index and all indices below it,
      * if not, "bubbles up" the indices that have smaller values.
      * 
