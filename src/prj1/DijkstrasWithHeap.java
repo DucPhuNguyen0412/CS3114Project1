@@ -2,7 +2,6 @@ package prj1;
 
 import java.util.ArrayList;
 
-import javax.naming.ldap.ExtendedRequest;
 
 //import java.util.ArrayList;
 
@@ -71,6 +70,11 @@ public class DijkstrasWithHeap {
             }
             getNeighbors(u, d, visited, q, distance);
         }
+        for (int i = 0; i < n; i++) {
+            if (distance[i] == Integer.MAX_VALUE) {
+                distance[i] = -1;
+            }
+        }
         return distance;
 
 
@@ -88,19 +92,9 @@ public class DijkstrasWithHeap {
            else if (graph[i][1] == source && !visited.contains(graph[i][0])) {
                 q.insert(graph[i][0], graph[i][2]);
                 distance[(graph[i][0]) - 1] = min(distance[(graph[i][0]) - 1], distance[source - 1] + graph[i][2]);
-           }
+           } 
         }
     }
-
-    // private int get(int value) {
-    //     int position = 0;
-    //     for (int i = 0; i < n; i++) {
-    //         if (graph[i][0] == value) {
-    //             position = i;
-    //         }
-    //     }
-    //     return position;
-    // }
 
     private int min(int d1, int d2) {
         if (d1 <= d2) {
@@ -108,6 +102,5 @@ public class DijkstrasWithHeap {
         }
         return d2;
      }
-
 
 }

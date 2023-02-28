@@ -1,6 +1,6 @@
 package prj1;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 /**
  * The implementation of Dijkstras shortest path algorithm by using a simple
@@ -50,23 +50,17 @@ public class DijkstrasWithoutHeap {
      */
     public int[] run(int source) {
         int[] distance = new int[n];
-        Boolean[] visited = new Boolean[n];
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        //Boolean[] visited = new Boolean[n];
+        //ArrayList<Integer> visited = new ArrayList<>();
+        //ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+
         for (int i = 0; i < n; i++) {
             distance[i] = Integer.MAX_VALUE;
-            visited[i] = false;
         }
-        distance[source] = 0;
-        visited[source] = true;
-        
-        
-
-        while (distance.length > 0) {
-            
-
-        }
-        
+        distance[source-1] = 0;
+        int min = graph[0][source];
+        distance[min] = 1;
         return null;
     }
-
+        
 }
