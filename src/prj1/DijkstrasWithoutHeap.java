@@ -1,19 +1,19 @@
 package prj1;
 
-//import java.util.ArrayList;
+import java.util.ArrayList;
 
 /**
  * The implementation of Dijkstras shortest path algorithm by using a simple
  * linear search to find the unvisited node with the minimum distance estimate
  * 
  * @author Skylar Mayfield
+ *         Phu Nguyen
  * @version 1.1
  */
 
 public class DijkstrasWithoutHeap {
     private int n;
-    private int[][] graph;
-
+    private ArrayList<Integer[]>[] graph;
 
     /**
      * Constructor of the class
@@ -27,16 +27,37 @@ public class DijkstrasWithoutHeap {
      *            end-points of the i-th edge and edges[i][2] is its weight
      */
     public DijkstrasWithoutHeap(int n, int[][] edges) {
-        int[][] graph = new int[n][3];
-        for (int i = 0; i < n; i++) {
-             for (int j = 0; j < 3; j++) {
-                 graph[i][j] = edges[i][j];
-             }
-        }
         this.n = n;
-        this.graph = graph;
-    }
+        int maxNode = 0;
 
+        // Find the maximum node number
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            maxNode = Math.max(maxNode, Math.max(u, v));
+        }
+
+        // Initialize the graph array with the maximum node number
+        this.graph = new ArrayList[maxNode + 1];
+
+        // Initialize each adjacency list
+        for (int i = 0; i <= maxNode; i++) {
+            graph[i] = new ArrayList<Integer[]>();
+        }
+
+        // Populate adjacency list with edges
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int w = edges[i][2];
+
+            Integer[] edge1 = {v, w};
+            graph[u].add(edge1);
+
+            Integer[] edge2 = {u, w};
+            graph[v].add(edge2);
+        }
+    }
 
     /**
      * This method computes and returns the distances of all nodes of the graph
@@ -49,40 +70,71 @@ public class DijkstrasWithoutHeap {
      *         of node i from the source
      */
     public int[] run(int source) {
+        // Initializing distance and visited arrays
         int[] distance = new int[n];
         Boolean[] visited = new Boolean[n];
         
-
+        // Initializing all distances to maximum value and all nodes as unvisited
         for (int i = 0; i < n; i++) {
             distance[i] = Integer.MAX_VALUE;
             visited[i] = false;
         }
-        distance[source-1] = 0;
-        //visited[source-1] = true;
-
-        for (int i = 0; i < n; i++) {
+        
+        // Distance of source node to itself is 0
+        // distance[source-1] = 0;
+        distance[source - 1] = 0;
+        int count = 0;
+        
+        // Looping through all nodes in the graph
+        while (count < n) {
+            // Finding the node with minimum distance that is not visited
             int min = findMin(distance, visited);
-            visited[min-1] = true; // setting true once we process it
-            if (!visited[min] && graph[i][min] != -1 && distance[i] != Integer.MAX_VALUE && distance[min] < distance[i]) {
-                distance[min] = distance[i] + graph[i][min];
-
+            
+            // If the minimum distance is Integer.MAX_VALUE, then we can break out of the loop since
+            // all remaining unvisited nodes are not connected to the source node
+            if (distance[min] == Integer.MAX_VALUE) {
+                break;
+            }
+        
+            // Marking this node as visited
+            visited[min] = true;
+            count++;
+                
+            // Update the distances of the adjacent nodes if necessary
+            for (Integer[] edge : graph[min]) {
+                int neighbor = edge[0] - 1;
+                int weight = edge[1];
+                int altDistance = distance[min] + weight;
+                if (!visited[neighbor] && altDistance < distance[neighbor]) {        
+                    distance[neighbor] = altDistance;
+                }
             }
         }
+
+        //Returning the array of distances from the source node
         return distance;
     }
-
+    
+    
+    // Finding the node with minimum distance that is not visited
     private int findMin(int[] distance, Boolean[] visited) {
+        // Initialize minimum distance to infinity and the minimum distance node to -1
         int min = Integer.MAX_VALUE;
-        int x = -1;
+        int minIndex = -1;
 
+        // Iterate over all nodes
         for (int i = 0; i < n; i++) {
-            // checking to see if unexplored, finding min value
-            if (visited[i] == false && distance[i] <= min) {
+            // Check if the node is unexplored and if its distance is less than the current minimum distance
+            if (!visited[i] && distance[i] <= min) {
+                // Update the minimum distance and minimum distance node
                 min = distance[i];
-                x = i;
+                minIndex = i;
             }
         }
-        return x;
+
+        // Return the index of the node with the minimum distance
+        return minIndex;
     }
+    
         
 }
