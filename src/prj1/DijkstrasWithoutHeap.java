@@ -12,8 +12,9 @@ import java.util.ArrayList;
  */
 
 public class DijkstrasWithoutHeap {
-    private int n;
-    private ArrayList<Integer[]>[] graph;
+    // instance variables
+    private int n; // number of vertices in the graph
+    private int[][] graph; // adjacency matrix representation of the graph
 
     /**
      * Constructor of the class
@@ -27,36 +28,12 @@ public class DijkstrasWithoutHeap {
      *            end-points of the i-th edge and edges[i][2] is its weight
      */
     public DijkstrasWithoutHeap(int n, int[][] edges) {
+        int[][] graph = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(edges[i], 0, graph[i], 0, 3);
+        }
         this.n = n;
-        int maxNode = 0;
-
-        // Find the maximum node number
-        for (int i = 0; i < edges.length; i++) {
-            int u = edges[i][0];
-            int v = edges[i][1];
-            maxNode = Math.max(maxNode, Math.max(u, v));
-        }
-
-        // Initialize the graph array with the maximum node number
-        this.graph = new ArrayList[maxNode + 1];
-
-        // Initialize each adjacency list
-        for (int i = 0; i <= maxNode; i++) {
-            graph[i] = new ArrayList<Integer[]>();
-        }
-
-        // Populate adjacency list with edges
-        for (int i = 0; i < edges.length; i++) {
-            int u = edges[i][0];
-            int v = edges[i][1];
-            int w = edges[i][2];
-
-            Integer[] edge1 = {v, w};
-            graph[u].add(edge1);
-
-            Integer[] edge2 = {u, w};
-            graph[v].add(edge2);
-        }
+        this.graph = graph;
     }
 
     /**
@@ -70,71 +47,89 @@ public class DijkstrasWithoutHeap {
      *         of node i from the source
      */
     public int[] run(int source) {
-        // Initializing distance and visited arrays
-        int[] distance = new int[n];
-        Boolean[] visited = new Boolean[n];
-        
-        // Initializing all distances to maximum value and all nodes as unvisited
+        // initialize the distance array, the visited list, and the adjacency list
+        int[] distance = new int[n]; // distance from source to each vertex
+        ArrayList<Integer> visited = new ArrayList<>(); // list of visited vertices
+        ArrayList<int[]> adj = new ArrayList<>(); // adjacency list of vertices
+
+        // set all distances to infinity except for the source vertex
         for (int i = 0; i < n; i++) {
             distance[i] = Integer.MAX_VALUE;
-            visited[i] = false;
         }
-        
-        // Distance of source node to itself is 0
-        // distance[source-1] = 0;
         distance[source - 1] = 0;
-        int count = 0;
-        
-        // Looping through all nodes in the graph
-        while (count < n) {
-            // Finding the node with minimum distance that is not visited
-            int min = findMin(distance, visited);
-            
-            // If the minimum distance is Integer.MAX_VALUE, then we can break out of the loop since
-            // all remaining unvisited nodes are not connected to the source node
-            if (distance[min] == Integer.MAX_VALUE) {
-                break;
+
+        // add the source vertex to the adjacency list
+        adj.add(new int[]{source, 0});
+
+        // loop until all vertices have been visited or there are no more adjacent vertices
+        while (visited.size() != n && adj.size() != 0) {
+            // get the vertex with the minimum distance from the source
+            int[] list = getMin(adj);
+            int u = list[0];
+            int d = list[1];
+
+            // add the vertex to the visited list if it hasn't been visited already
+            if (!visited.contains(u)) {
+                visited.add(u);
             }
-        
-            // Marking this node as visited
-            visited[min] = true;
-            count++;
-                
-            // Update the distances of the adjacent nodes if necessary
-            for (Integer[] edge : graph[min]) {
-                int neighbor = edge[0] - 1;
-                int weight = edge[1];
-                int altDistance = distance[min] + weight;
-                if (!visited[neighbor] && altDistance < distance[neighbor]) {        
-                    distance[neighbor] = altDistance;
-                }
+
+            // get the adjacent vertices of the current vertex and update their distances
+            getAdjacent(u, d, visited, adj, distance);
+        }
+
+        // set distances to -1 for any vertices that were not visited
+        for (int i = 0; i < n; i++) {
+            if (distance[i] == Integer.MAX_VALUE) {
+                distance[i] = -1;
             }
         }
 
-        //Returning the array of distances from the source node
+        // return the distance array
         return distance;
     }
-    
-    
-    // Finding the node with minimum distance that is not visited
-    private int findMin(int[] distance, Boolean[] visited) {
-        // Initialize minimum distance to infinity and the minimum distance node to -1
-        int min = Integer.MAX_VALUE;
-        int minIndex = -1;
 
-        // Iterate over all nodes
+    // method that finds the adjacent vertices of a given vertex and updates their distances
+    private void getAdjacent(int source, int w, ArrayList<Integer> visited, ArrayList<int[]> adj, int[] distance) {
+        // loop through each edge in the graph
         for (int i = 0; i < n; i++) {
-            // Check if the node is unexplored and if its distance is less than the current minimum distance
-            if (!visited[i] && distance[i] <= min) {
-                // Update the minimum distance and minimum distance node
-                min = distance[i];
-                minIndex = i;
+            // if the edge starts at the source vertex and the other vertex hasn't been visited
+            if (graph[i][0] == source && !visited.contains(graph[i][1])) {
+                int v = graph[i][1];
+                // add the other vertex to the adjacency list and update its distance
+                adj.add(new int[]{v, graph[i][2]});
+                distance[v - 1] = Math.min(distance[v - 1], distance[source - 1] + graph[i][2]);
+            }
+            // if the edge ends at the source vertex and the other vertex hasn't been visited
+            else if (graph[i][1] == source && !visited.contains(graph[i][0])) {
+                int v = graph[i][0];
+                // add the other vertex to the adjacency list and update its distance
+                adj.add(new int[]{v, graph[i][2]});
+                distance[v - 1] = Math.min(distance[v - 1], distance[source - 1] + graph[i][2]);
             }
         }
-
-        // Return the index of the node with the minimum distance
-        return minIndex;
     }
-    
+
+    // method that finds
+    private int[] getMin(ArrayList<int[]> adj) {
+        int min = Integer.MAX_VALUE;
+        int w = 0;
+        int index = 0;
         
+        // Loop through each integer array in the ArrayList
+        for (int i = 0; i < adj.size(); i++) {
+            int[] arr = adj.get(i);
+            // If the second element of the array is less than the current minimum value,
+            // update the minimum value, variable w and the index of the minimum value
+            if (arr[1] < min) {
+                min = arr[1];
+                w = arr[0];
+                index = i;
+            }
+        }
+        
+        // Remove the integer array with the minimum value from the ArrayList
+        adj.remove(index);
+
+        return new int[]{w, min};
+    }
 }

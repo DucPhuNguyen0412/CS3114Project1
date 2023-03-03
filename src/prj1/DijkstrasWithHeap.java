@@ -31,11 +31,9 @@ public class DijkstrasWithHeap {
      */
     public DijkstrasWithHeap(int n, int[][] edges) {
         int[][] graph = new int[n][3];
-           for (int i = 0; i < n; i++) {
-                for (int j = 0; j < 3; j++) {
-                    graph[i][j] = edges[i][j];
-                }
-           }
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(edges[i], 0, graph[i], 0, 3);
+        }
         this.n = n;
         this.graph = graph;
     }
@@ -63,7 +61,7 @@ public class DijkstrasWithHeap {
         distance[source-1] = 0;
         q.insert(source, 0);
 
-       while (visited.size() != n && !q.isEmpty()) {
+       while (visited.size() < n && q.getHeap().length != 0) {
             int[] min = q.extractMin();
             int u = min[0];
             int d = min[1];
@@ -82,27 +80,33 @@ public class DijkstrasWithHeap {
 
     }
 
-
-     private void getNeighbors(int source, int w, ArrayList<Integer> visited, MinHeap q, int[] distance) {
-        //add -1 here 
+    private void getNeighbors(int source, int w, ArrayList<Integer> visited, MinHeap q, int[] distance) {
+        // Iterate over all edges in the graph
         for (int i = 0; i < n; i++) {
-           // if unexplored, add to queue
-           if ((graph[i][0] == source && !visited.contains(graph[i][1]))) {
-                q.insert(graph[i][1], graph[i][2]);
-                distance[(graph[i][1]) - 1] = min(distance[(graph[i][1] - 1)], distance[source-1] + graph[i][2]);
-           }
-           else if (graph[i][1] == source && !visited.contains(graph[i][0])) {
-                q.insert(graph[i][0], graph[i][2]);
-                distance[(graph[i][0]) - 1] = min(distance[(graph[i][0]) - 1], distance[source - 1] + graph[i][2]);
-           } 
+            int u = graph[i][0];
+            int v = graph[i][1];
+            int weight = graph[i][2];
+    
+            // Check if the current edge is adjacent to the source node
+            if (u == source && !visited.contains(v)) {
+                int newDistance = distance[u - 1] + weight;
+                if (newDistance < distance[v - 1]) {
+                    // Update the distance to the neighboring node
+                    distance[v - 1] = newDistance;
+    
+                    // Add the neighboring node to the priority queue
+                    q.insert(v, newDistance);
+                }
+            } else if (v == source && !visited.contains(u)) {
+                int newDistance = distance[v - 1] + weight;
+                if (newDistance < distance[u - 1]) {
+                    // Update the distance to the neighboring node
+                    distance[u - 1] = newDistance;
+    
+                    // Add the neighboring node to the priority queue
+                    q.insert(u, newDistance);
+                }
+            }
         }
     }
-
-    private int min(int d1, int d2) {
-        if (d1 <= d2) {
-            return d1;
-        }
-        return d2;
-     }
-
 }

@@ -42,12 +42,15 @@ public class MinHeap {
     public void insert(int id, int value) {
         int position = size;
         nodes[position] = new HeapNode(id, value); // inserting the node as the last node;
-        while (value < nodes[position/d].getValue()) { // if node is less than parent node
-            HeapNode temp = nodes[position/d];     // placeholder for the parent
-            nodes[position/d] = nodes[position];     // swap position
+        while (value < nodes[(position-1)/d].getValue()) { // if node is less than parent node
+            HeapNode temp = nodes[(position-1)/d];     // placeholder for the parent
+            nodes[(position-1)/d] = nodes[position];     // swap position
             nodes[position] = temp;
-            position = position/d;
-        } 
+            position = (position-1)/d;
+            if(position == 0){
+                break;
+            }
+        }
         size++;
         // If node is less than parent node, we swap it (in the array)
         // Keep doing so until heap order is preserved 
@@ -91,20 +94,27 @@ public class MinHeap {
         for (int i = 0; i < nodes.length-1; i++) {
             if (nodes[i].getId() == id) {
                 nodes[i].setValue(newValue);
-                while (newValue < nodes[i/d].getValue()) { // if node is less than parent node
-                    HeapNode temp = nodes[i/d];     // placeholder for the parent
-                    nodes[i/d] = nodes[i];     // swap position
-                    nodes[i] = temp;
-                } 
+                heapifyUp(i);
+                break;
             }
         }
-
-        // need to preserve the order
-
-        //find ID of the node and find pos based on that ID
-        //decrase key
     }
 
+    /**
+     * Ensuring that the heap peoperty is satisfied at the given index and all indices above it,
+     * if not, "bubbles up" the indices that have smaller values.
+     * 
+     * @param i The index to heapify upwards from
+     */
+    private void heapifyUp(int i) {
+        while (i > 0 && nodes[i].getValue() < nodes[(i - 1) / d].getValue()) {
+            int parent = (i - 1) / d;
+            HeapNode temp = nodes[i];
+            nodes[i] = nodes[parent];
+            nodes[parent] = temp;
+            i = parent;
+        }
+    }
 
     /**
      * This method returns the array representation of heap
@@ -138,19 +148,7 @@ public class MinHeap {
         }
         return sb.toString();
     }
-
-    /**
-     * 
-     * @return
-     */
-    public Boolean isEmpty() {
-        Boolean empty = false;
-        if (size == 0) {
-            empty = true;
-        }
-        return empty;
-    }
-
+    
     /**
      * Ensuring that the heap peoperty is satisfied at the given index and all indices below it,
      * if not, "bubbles up" the indices that have smaller values.
@@ -160,34 +158,22 @@ public class MinHeap {
     private void heapifyDown(int i) {
         int minVal = i;
 
-        // Check the values of the left and right children, if they exist
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-        if (left < size && nodes[left].getValue() < nodes[minVal].getValue()) {
-            minVal = left;
-        }
-        if (right < size && nodes[right].getValue() < nodes[minVal].getValue()) {
-            minVal = right;
+        int firstChild = d * i + 1;
+        int lastChild = Math.min(firstChild + d - 1, size - 1);
+
+        // Check the values of the children and their descendants
+        for (int j = firstChild; j <= lastChild; j++) {
+            if (nodes[j].getValue() < nodes[minVal].getValue()) {
+                minVal = j;
+            }
         }
 
-        // If the minimum value is not at the current index, swap the nodes
+        // Swap nodes if necessary
         if (minVal != i) {
-            swapNodes(i, minVal);
-            // Recursively heapify downwards from the minimum value index
+            HeapNode temp = nodes[i];
+            nodes[i] = nodes[minVal];
+            nodes[minVal] = temp;
             heapifyDown(minVal);
         }
     }
-
-    /**
-     * Swaps the nodes at the given indices.
-     * 
-     * @param i The index of the first node to swap
-     * @param j The index of the second node to swap
-     */
-    private void swapNodes(int i, int j) {
-        HeapNode temp = nodes[i];
-        nodes[i] = nodes[j];
-        nodes[j] = temp;
-    }
-
 }
